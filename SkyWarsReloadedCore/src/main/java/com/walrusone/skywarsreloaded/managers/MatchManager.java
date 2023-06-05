@@ -508,7 +508,10 @@ public class MatchManager {
         if (SkyWarsReloaded.getCfg().isHealthVoteEnabled()) {
             gameMap.getHealthOption().completeOption();
         }
-        selectKit(gameMap);
+        // Jadedtdt allow disabling kits
+        if (SkyWarsReloaded.getCfg().areKitsEnabled()) {
+            selectKit(gameMap);
+        }
         gameMap.getCage().removeSpawnHousing(gameMap);
         gameMap.getWaitingPlayers().clear();
 
@@ -685,6 +688,10 @@ public class MatchManager {
                         }
                         if (SkyWarsReloaded.getCfg().getClearInventoryOnWin()) {
                             pWinner.getInventory().clear();
+                        } else {
+                            // Jadedtdt update the restore inventory
+                            PlayerData pData = PlayerData.getPlayerData(pWinner.getUniqueId());
+                            if (pData != null) pData.updateSavedInventory(pWinner.getInventory().getContents(), pWinner.getInventory().getArmorContents());
                         }
                         Bukkit.getPluginManager().callEvent(new SkyWarsWinEvent(winnerData, gameMap));
                     }

@@ -30,8 +30,9 @@ public class PlayerData {
     private final UUID uuid;
     private final Scoreboard sbBeforeGame;
     private Tagged taggedBy;
-    private final ItemStack[] savedInv;
-    private final ItemStack[] savedArmor;
+    // Jadedtdt removed final so we can update it for winners
+    private ItemStack[] savedInv;
+    private ItemStack[] savedArmor;
     private final double healthBeforeGame;
     private final int foodBeforeGame;
     private final float saturationBeforeGame;
@@ -77,6 +78,12 @@ public class PlayerData {
         return null;
     }
 
+    // Jadedtdt winners can update restore inventory
+    public void updateSavedInventory(ItemStack[] inventory, ItemStack[] armor) {
+        this.savedInv = inventory;
+        this.savedArmor = armor;
+    }
+
     public void restoreToBeforeGameState(boolean restoreInstantly) {
         this.restoreToBeforeGameState(restoreInstantly, true);
     }
@@ -104,11 +111,10 @@ public class PlayerData {
                 }
             }
             // Reset inventory
-            // Jadedtdt remove inventory restore
-//                Util.get().clear(player);
-//                PlayerInventory pInv = player.getInventory();
-//                pInv.setContents(savedInv);
-//                pInv.setArmorContents(savedArmor);
+            Util.get().clear(player);
+            PlayerInventory pInv = player.getInventory();
+            pInv.setContents(savedInv);
+            pInv.setArmorContents(savedArmor);
 
             SkyWarsReloaded.getNMS().setMaxHealth(player, 20);
             // Remove death screen for player - this will send them to spawn so we undo that by TP back
