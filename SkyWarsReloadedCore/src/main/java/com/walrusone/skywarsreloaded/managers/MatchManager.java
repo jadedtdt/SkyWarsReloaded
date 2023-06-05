@@ -484,7 +484,8 @@ public class MatchManager {
         }
         for (Player player : gameMap.getAlivePlayers()) {
             player.closeInventory();
-            player.getInventory().clear();
+            // Jadedtdt remove inventory clear
+//            player.getInventory().clear();
             player.setGameMode(GameMode.SURVIVAL);
             if (SkyWarsReloaded.getCfg().titlesEnabled()) {
                 Util.get().sendTitle(player, 5, 60, 5, new Messaging.MessageFormatter().setVariable("map", gameMap.getDisplayName()).format("titles.start-title"),
