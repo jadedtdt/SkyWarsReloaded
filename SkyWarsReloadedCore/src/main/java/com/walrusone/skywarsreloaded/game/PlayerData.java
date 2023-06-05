@@ -104,10 +104,12 @@ public class PlayerData {
                 }
             }
             // Reset inventory
-            Util.get().clear(player);
-            PlayerInventory pInv = player.getInventory();
-            pInv.setContents(savedInv);
-            pInv.setArmorContents(savedArmor);
+            // Jadedtdt remove inventory restore
+//                Util.get().clear(player);
+//                PlayerInventory pInv = player.getInventory();
+//                pInv.setContents(savedInv);
+//                pInv.setArmorContents(savedArmor);
+
             SkyWarsReloaded.getNMS().setMaxHealth(player, 20);
             // Remove death screen for player - this will send them to spawn so we undo that by TP back
             this.locationBeforeRespawn = player.getLocation();
