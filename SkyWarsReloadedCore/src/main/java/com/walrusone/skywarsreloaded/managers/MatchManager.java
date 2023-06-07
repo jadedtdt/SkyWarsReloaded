@@ -485,7 +485,7 @@ public class MatchManager {
         for (Player player : gameMap.getAlivePlayers()) {
             player.closeInventory();
             // Jadedtdt remove inventory clear
-//            player.getInventory().clear();
+            player.getInventory().clear();
             player.setGameMode(GameMode.SURVIVAL);
             if (SkyWarsReloaded.getCfg().titlesEnabled()) {
                 Util.get().sendTitle(player, 5, 60, 5, new Messaging.MessageFormatter().setVariable("map", gameMap.getDisplayName()).format("titles.start-title"),
@@ -508,9 +508,13 @@ public class MatchManager {
         if (SkyWarsReloaded.getCfg().isHealthVoteEnabled()) {
             gameMap.getHealthOption().completeOption();
         }
-        // Jadedtdt allow disabling kits
+        // Jadedtdt allow disabling kits and instead use previous items as kit
         if (SkyWarsReloaded.getCfg().areKitsEnabled()) {
+            Util.get().logToFile(ChatColor.YELLOW + "Gene_Using Kits? Yes");
             selectKit(gameMap);
+        } else {
+            Util.get().logToFile(ChatColor.YELLOW + "Gene_Using Kits? No");
+            restoreItemsAsKit(gameMap);
         }
         gameMap.getCage().removeSpawnHousing(gameMap);
         gameMap.getWaitingPlayers().clear();
@@ -548,6 +552,12 @@ public class MatchManager {
             for (final Player player : gameMap.getAlivePlayers()) {
                 GameKit.giveKit(player, gameMap.getSelectedKit(player));
             }
+        }
+    }
+
+    private void restoreItemsAsKit(GameMap gameMap) {
+        for (final Player player : gameMap.getAlivePlayers()) {
+            Objects.requireNonNull(PlayerData.getPlayerData(player.getUniqueId())).restoreSavedInventory();
         }
     }
 
@@ -688,10 +698,6 @@ public class MatchManager {
                         }
                         if (SkyWarsReloaded.getCfg().getClearInventoryOnWin()) {
                             pWinner.getInventory().clear();
-                        } else {
-                            // Jadedtdt update the restore inventory
-                            PlayerData pData = PlayerData.getPlayerData(pWinner.getUniqueId());
-                            if (pData != null) pData.updateSavedInventory(pWinner.getInventory().getContents(), pWinner.getInventory().getArmorContents());
                         }
                         Bukkit.getPluginManager().callEvent(new SkyWarsWinEvent(winnerData, gameMap));
                     }
@@ -784,6 +790,8 @@ public class MatchManager {
                                     pd.setTaggedBy(null);
                                 }
                             }
+                            // Jadedtdt winners get to keep inventory?
+                            Objects.requireNonNull(PlayerData.getPlayerData(player.getUniqueId())).updateSavedInventory(player.getInventory().getContents(), player.getInventory().getArmorContents());
                             SkyWarsReloaded.get().getPlayerManager().removePlayer(player, PlayerRemoveReason.PLAYER_QUIT_GAME, null, false);
                             // MatchManager.this.removeAlivePlayer(player, DamageCause.CUSTOM, true, true);
                         }

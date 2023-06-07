@@ -21,6 +21,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Objects;
+
 public class PlayerDeathListener implements org.bukkit.event.Listener {
     public PlayerDeathListener() {
     }
@@ -71,6 +73,8 @@ public class PlayerDeathListener implements org.bukkit.event.Listener {
             return;
         }
 
+        Util.get().logToFile(ChatColor.YELLOW + "Gene_OnDeath3");
+
         // Drop player items
         boolean canPickup = player.getCanPickupItems();
         player.setCanPickupItems(false);
@@ -88,6 +92,8 @@ public class PlayerDeathListener implements org.bukkit.event.Listener {
         player.setHealth(20);
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[] {null, null, null, null});
+        // Jadedtdt on death clear the saved inventory
+        Objects.requireNonNull(PlayerData.getPlayerData(player.getUniqueId())).clearSavedInventory();
 
         // Handle cause of death & player removal
         EntityDamageEvent.DamageCause damageCause = EntityDamageEvent.DamageCause.CUSTOM;
@@ -109,6 +115,7 @@ public class PlayerDeathListener implements org.bukkit.event.Listener {
     public void onDeath2(PlayerDeathEvent event) {
         GameMap gameMap = MatchManager.get().getPlayerMap(event.getEntity());
         if (gameMap == null) return;
+        Util.get().logToFile(ChatColor.YELLOW + "Gene_OnDeath2");
         /*event.setDeathMessage("");
 
         Player player = event.getEntity();
@@ -148,10 +155,13 @@ public class PlayerDeathListener implements org.bukkit.event.Listener {
             if (SkyWarsReloaded.getCfg().getEnableQuickDeath()) {
                 if (e.getTo().getY() <= SkyWarsReloaded.getCfg().getQuickDeathY()) {
                     if (gameMap.getMatchState() == MatchState.PLAYING) {
+                        Util.get().logToFile(ChatColor.YELLOW + "Gene_OnQuickDeath");
                         EntityDamageEvent.DamageCause damageCause = EntityDamageEvent.DamageCause.VOID;
                         if (player.getLastDamageCause() != null) {
                             damageCause = player.getLastDamageCause().getCause();
                         }
+                        // Jadedtdt on death clear the saved inventory
+                        Objects.requireNonNull(PlayerData.getPlayerData(player.getUniqueId())).clearSavedInventory();
                         SkyWarsReloaded.get().getPlayerManager().removePlayer(
                                 player, PlayerRemoveReason.DEATH, damageCause, true);
                         // MatchManager.get().removeAlivePlayer(e.getPlayer(), damageCause, false, true);

@@ -78,10 +78,26 @@ public class PlayerData {
         return null;
     }
 
+
+    public void clearSavedInventory() {
+        Util.get().logToFile(ChatColor.YELLOW + "Gene_Cleared the Saved Inventory");
+        this.updateSavedInventory(new ItemStack[41], new ItemStack[4]);
+    }
     // Jadedtdt winners can update restore inventory
     public void updateSavedInventory(ItemStack[] inventory, ItemStack[] armor) {
+        Util.get().logToFile(ChatColor.YELLOW + "Gene_Updated the Saved Inventory");
         this.savedInv = inventory;
         this.savedArmor = armor;
+    }
+
+    // Jadedtdt all players can restore their items at game start
+    public void restoreSavedInventory() {
+        Util.get().logToFile(ChatColor.YELLOW + "Gene_Restoring the Saved Inventory");
+        final Player player = this.getPlayer();
+//        Util.get().clear(player);
+        PlayerInventory pInv = player.getInventory();
+        pInv.setContents(savedInv);
+        pInv.setArmorContents(savedArmor);
     }
 
     public void restoreToBeforeGameState(boolean restoreInstantly) {
@@ -111,10 +127,7 @@ public class PlayerData {
                 }
             }
             // Reset inventory
-            Util.get().clear(player);
-            PlayerInventory pInv = player.getInventory();
-            pInv.setContents(savedInv);
-            pInv.setArmorContents(savedArmor);
+            this.restoreSavedInventory();
 
             SkyWarsReloaded.getNMS().setMaxHealth(player, 20);
             // Remove death screen for player - this will send them to spawn so we undo that by TP back
